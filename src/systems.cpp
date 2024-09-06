@@ -30,7 +30,7 @@ void Systems::InitUpdatePositionSystem()
 		p.x += v.x * it.delta_time();
 		p.y += v.y * it.delta_time();
 		p.z += v.z * it.delta_time();
-		m = MatrixTranslate(p.x, p.y, p.z);
+		m = MatrixTranslate(p.x, p.y, p.z);		
 			});
 }
 

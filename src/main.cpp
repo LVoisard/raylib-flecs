@@ -21,7 +21,7 @@ int main(void)
     const int halfExtentX = 100;
     const int halfExtentY = 50;
     const int halfExtentZ = 100;
-    const int NB_OF_PARTICLES = 50000;
+    const int NB_OF_PARTICLES = 250000;
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
@@ -44,6 +44,8 @@ int main(void)
     world.set<Gravity>({ 9.8f });
     world.set<Damping>({ 0.98f });
 
+    world.import<flecs::stats>(); 
+    world.set<flecs::Rest>({});
 
     Systems systems(world);
 
