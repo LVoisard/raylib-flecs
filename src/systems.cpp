@@ -25,12 +25,13 @@ void Systems::InitSystems()
 
 void Systems::InitUpdatePositionSystem()
 {
-	world.system<Position, Matrix, const Velocity>("UpdatePosition")
-		.each([](flecs::iter& it, size_t, Position& p, Matrix& m, const Velocity& v) {
+	world.system<Position, Size3D, Matrix, const Velocity>("UpdatePosition")
+		.each([](flecs::iter& it, size_t, Position& p, Size3D& s, Matrix& m, const Velocity& v) {
 		p.x += v.x * it.delta_time();
 		p.y += v.y * it.delta_time();
 		p.z += v.z * it.delta_time();
 		m = MatrixTranslate(p.x, p.y, p.z);		
+		m = MatrixMultiply(m, MatrixScale(s.sizeX, s.sizeY, s.sizeZ));
 			});
 }
 
