@@ -17,7 +17,7 @@ const int screenHeight = 1080;
 const int halfExtentX = 100;
 const int halfExtentY = 50;
 const int halfExtentZ = 100;
-const int NB_OF_PARTICLES = 250000;
+const int NB_OF_PARTICLES = 2500000;
 
 flecs::entity createParticleSystem(flecs::world& world)
 {

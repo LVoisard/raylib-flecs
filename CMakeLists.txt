@@ -10,6 +10,7 @@ if (POLICY CMP0141)
 endif()
 
 project("raylib-flecs")
+set (CMAKE_BUILD_TYPE RELEASE)
 
 add_subdirectory("src")
 file( COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

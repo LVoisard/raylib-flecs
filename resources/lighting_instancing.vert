@@ -32,7 +32,7 @@ void main()
     fragTexCoord = vertexTexCoord;
     //fragColor = vec4(vec3(textureWidth / 1000.0), 1);
     float xCoord = (gl_InstanceID % textureWidth) / float(textureWidth);
-    float yCoord = floor(gl_InstanceID / textureWidth) / float(textureHeight);
+    float yCoord = floor(float(gl_InstanceID / float(textureWidth))) / float(textureHeight);
     fragColor = texture(matEmission, vec2(xCoord, yCoord));
     fragNormal = normalize(vec3(matNormal*vec4(vertexNormal, 1.0)));
 

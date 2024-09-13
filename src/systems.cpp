@@ -88,8 +88,7 @@ void Systems::InitDrawParticlesSystem()
 {
 	draw_particles_system = world.system<ParticleSystemComponent>("DrawParticles")
 		.kind(0)
-		.multi_threaded()
-		.each([this](const flecs::entity& e, ParticleSystemComponent& s) {
+		.each([this](ParticleSystemComponent& s) {
 			
 			auto q = world.query_builder<Matrix>()
 			.with(flecs::ChildOf, "ParticleSystemEntity")
