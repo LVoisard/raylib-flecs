@@ -26,18 +26,24 @@ void Systems::InitSystems()
 void Systems::InitUpdatePositionSystem()
 {
 	world.system<Position, Size3D, Matrix, const Velocity>("UpdatePosition")
+		.multi_threaded()
 		.each([](flecs::iter& it, size_t, Position& p, Size3D& s, Matrix& m, const Velocity& v) {
-		p.x += v.x * it.delta_time();
-		p.y += v.y * it.delta_time();
-		p.z += v.z * it.delta_time();
-		m = MatrixTranslate(p.x, p.y, p.z);		
-		m = MatrixMultiply(m, MatrixScale(s.sizeX, s.sizeY, s.sizeZ));
+		float dx = v.x * it.delta_time();
+		float dy = v.y * it.delta_time();
+		float dz = v.z * it.delta_time();
+		p.x += dx;
+		p.y += dy;
+		p.z += dz;
+		m.m12 = p.x;
+		m.m13 = p.y;
+		m.m14 = p.z;
 			});
 }
 
 void Systems::InitApplyGravitySystem()
 {
 	world.system<Velocity, const Gravity>("ApplyGravity")
+		.multi_threaded()
 		.term_at(1).singleton()
 		.each([](flecs::iter& it, size_t, Velocity& v, const Gravity& g) {		
 			v.y = v.y - (g.value * g.value * it.delta_time());
@@ -47,6 +53,7 @@ void Systems::InitApplyGravitySystem()
 void Systems::InitApplyDampingSystem()
 {
 	world.system<Velocity, const Damping>("ApplyDamping")
+		.multi_threaded()
 		.term_at(1).singleton()
 		.each([](flecs::iter& it, size_t, Velocity& v, const Damping& d) {
 			v.x *= d.coefficient;
@@ -58,6 +65,7 @@ void Systems::InitApplyDampingSystem()
 void Systems::InitApplyBoundingBoxSystem()
 {
 	world.system<Position, Velocity, Damping, Size3D, const Game>("ApplyBoundingBox")
+		.multi_threaded()
 		.term_at(4).singleton()
 		.each([](Position& p, Velocity& v, const Damping& d, const Size3D& s, const Game& g) {
 		if (p.x + s.sizeX > g.halfExtentX || p.x - s.sizeX < -g.halfExtentX) {
@@ -78,9 +86,15 @@ void Systems::InitApplyBoundingBoxSystem()
 // need to manually call this when we draw
 void Systems::InitDrawParticlesSystem()
 {
-	draw_particles_system = world.system<Position, Color>("DrawParticles")
+	draw_particles_system = world.system<ParticleSystemComponent>("DrawParticles")
 		.kind(0)
-		.each([](Position& p, Color c) {
-			DrawCircle(p.x, p.y, 5, c);
+		.multi_threaded()
+		.each([this](const flecs::entity& e, ParticleSystemComponent& s) {
+			
+			auto q = world.query_builder<Matrix>()
+			.with(flecs::ChildOf, "ParticleSystemEntity")
+			.build();
+			
+			DrawMeshInstanced(s.mesh, s.instanceMaterial, q.first().get<Matrix>(), s.NB_OF_PARTICLES);
 			});
 }

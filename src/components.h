@@ -40,3 +40,10 @@ struct Size3D {
 	float sizeZ;
 };
 
+struct ParticleSystemComponent {
+	Mesh mesh;
+	Shader shader;
+	Material instanceMaterial;
+	int NB_OF_PARTICLES;
+};
+
