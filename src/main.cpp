@@ -17,7 +17,7 @@ const int screenHeight = 1080;
 const int halfExtentX = 100;
 const int halfExtentY = 50;
 const int halfExtentZ = 100;
-const int NB_OF_PARTICLES = 2500000;
+const int NB_OF_PARTICLES = 600000;
 
 flecs::entity createParticleSystem(flecs::world& world)
 {
@@ -108,18 +108,20 @@ int main(void)
 
     world.import<flecs::stats>(); 
     world.set<flecs::Rest>({});
-
+    
+    
+    flecs::entity particleSystem = createParticleSystem(world);
     Systems systems(world);
 
     // Get shader locations    
     Camera camera = { 0 };
-    camera.position = { 0, 100, -500.0f };    // Camera position
+    camera.position = { 0, 25, -250.0f };    // Camera position
     camera.target = { 0.0f, 0.0f, 1.0f };              // Camera looking at point
     camera.up = { 0.0f, 1.0f, 0.0f };                  // Camera up vector (rotation towards target)
     camera.fovy = 45.0f;                                        // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;                     // Camera projection type
 
-    flecs::entity particleSystem = createParticleSystem(world);
+    
 
 
     // Main game loop

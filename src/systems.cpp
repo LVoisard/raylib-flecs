@@ -26,6 +26,7 @@ void Systems::InitSystems()
 void Systems::InitUpdatePositionSystem()
 {
 	world.system<Position, Size3D, Matrix, const Velocity>("UpdatePosition")
+		.cached()
 		.multi_threaded()
 		.each([](flecs::iter& it, size_t, Position& p, Size3D& s, Matrix& m, const Velocity& v) {
 		float dx = v.x * it.delta_time();
@@ -43,6 +44,7 @@ void Systems::InitUpdatePositionSystem()
 void Systems::InitApplyGravitySystem()
 {
 	world.system<Velocity, const Gravity>("ApplyGravity")
+		.cached()
 		.multi_threaded()
 		.term_at(1).singleton()
 		.each([](flecs::iter& it, size_t, Velocity& v, const Gravity& g) {		
@@ -53,6 +55,7 @@ void Systems::InitApplyGravitySystem()
 void Systems::InitApplyDampingSystem()
 {
 	world.system<Velocity, const Damping>("ApplyDamping")
+		.cached()
 		.multi_threaded()
 		.term_at(1).singleton()
 		.each([](flecs::iter& it, size_t, Velocity& v, const Damping& d) {
@@ -65,6 +68,7 @@ void Systems::InitApplyDampingSystem()
 void Systems::InitApplyBoundingBoxSystem()
 {
 	world.system<Position, Velocity, Damping, Size3D, const Game>("ApplyBoundingBox")
+		.cached()
 		.multi_threaded()
 		.term_at(4).singleton()
 		.each([](Position& p, Velocity& v, const Damping& d, const Size3D& s, const Game& g) {
@@ -86,14 +90,15 @@ void Systems::InitApplyBoundingBoxSystem()
 // need to manually call this when we draw
 void Systems::InitDrawParticlesSystem()
 {
+	particle_transforms_query = world.query_builder<Matrix>()
+		.with(flecs::ChildOf, "ParticleSystemEntity")
+		.build();
+
 	draw_particles_system = world.system<ParticleSystemComponent>("DrawParticles")
 		.kind(0)
+		.multi_threaded()
 		.each([this](ParticleSystemComponent& s) {
 			
-			auto q = world.query_builder<Matrix>()
-			.with(flecs::ChildOf, "ParticleSystemEntity")
-			.build();
-			
-			DrawMeshInstanced(s.mesh, s.instanceMaterial, q.first().get<Matrix>(), s.NB_OF_PARTICLES);
+			DrawMeshInstanced(s.mesh, s.instanceMaterial, particle_transforms_query.first().get<Matrix>(), s.NB_OF_PARTICLES);
 			});
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "flecs.h"
+#include "raylib.h"
 
 class Systems {
 public:
@@ -18,5 +19,6 @@ public:
 
 private:
 	flecs::world world;
+	flecs::query<Matrix> particle_transforms_query;
 	flecs::system draw_particles_system;
 };
